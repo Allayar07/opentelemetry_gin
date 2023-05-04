@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  app:
+    image: 2955285f156e277f745cc7b20d50d4d489683c1ee44752f0cffd09dec4a46025
+    build: ./opt
+
+  db-service:
+    image: postgres:14.1-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password0701
+      - POSTGRES_DB=practice
+    ports:
+      - '5432:5432/tcp'

@@ -3,8 +3,8 @@ package services
 import (
 	"context"
 	"go.opentelemetry.io/otel"
-	"practice_optelem/internal/redis_cache"
-	"practice_optelem/internal/repositroy"
+	"practice_optelem/first-service/internal/redis_cache"
+	"practice_optelem/first-service/internal/repositroy"
 )
 
 type FileService struct {

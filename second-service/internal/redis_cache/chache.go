@@ -7,7 +7,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"go.opentelemetry.io/otel"
 	"log"
-	"practice_optelem/internal/models"
+	"practice_optelem/second-service/internal/models"
 )
 
 type Cache struct {

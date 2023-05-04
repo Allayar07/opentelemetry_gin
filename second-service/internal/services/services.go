@@ -1,8 +1,8 @@
 package services
 
 import (
-	"practice_optelem/internal/redis_cache"
-	"practice_optelem/internal/repositroy"
+	"practice_optelem/second-service/internal/redis_cache"
+	"practice_optelem/second-service/internal/repositroy"
 )
 
 type Service struct {
