@@ -84,7 +84,4 @@ then
 
 * Do Request for this: http://127.0.0.1:8089/call-service
 * And see this link: http://localhost:9411/zipkin/ 
-after you can see this :
-* ![img.png](img.png)
-
-And then go to right corner and click ```RUN QUERY``` button. And you can see services trace
+after you can see Zipkin UI and then go to right corner click ```RUN QUERY``` button. And you can see services trace
