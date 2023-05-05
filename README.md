@@ -48,3 +48,17 @@ docker-compose up
 check this link: http://127.0.0.1:9411/zipkin/ or http://localhost:9411/zipkin/ it checks zipkin's activities.
 
 And  the request first service
+
+# Note :
+if docker run or docker compose isn't working ==> firstly pull zipkin docker image and run it on port 9411:
+```
+docker run -d -p 9411:9411 openzipkin/zipkin-slim
+```
+After this operation do this: open two terminal and cd first-service and second-service and then run:
+```
+go mod tidy
+```
+And then run project locally .Use this command for both services each terminal:
+```
+go run cmd/main.go
+```
