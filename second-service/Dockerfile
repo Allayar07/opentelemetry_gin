@@ -7,6 +7,6 @@ COPY go.sum .
 RUN go mod download
 COPY ./ ./
 
-RUN go build -o opt ./cmd/main.go
+RUN go build -o service_2 ./cmd/main.go
 
-CMD ["./opt"]
+CMD ["./service_2"]

@@ -2,6 +2,8 @@ package server
 
 import (
 	"context"
+	"github.com/go-redis/redis/v8"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/zipkin"
 	"go.opentelemetry.io/otel/propagation"
@@ -14,21 +16,20 @@ import (
 	"practice_optelem/first-service/internal/redis_cache"
 	repositroy2 "practice_optelem/first-service/internal/repositroy"
 	"practice_optelem/first-service/internal/services"
-	"practice_optelem/first-service/pkg"
 )
 
 func Init(port string) {
-	db, err := repositroy2.NewPostgresDB(context.Background())
-	if err != nil {
-		log.Fatalln(err)
-	}
-	repos := repositroy2.NewRepository(db)
-	client, err := pkg.NewRedisClient(7, context.Background())
-	if err != nil {
-		log.Fatalln(err)
-	}
+	//db, err := repositroy2.NewPostgresDB(context.Background())
+	//if err != nil {
+	//	log.Fatalln(err)
+	//}
+	repos := repositroy2.NewRepository(&pgxpool.Pool{})
+	//client, err := pkg.NewRedisClient(7, context.Background())
+	//if err != nil {
+	//	log.Fatalln(err)
+	//}
 
-	cacheService := redis_cache.NewCache(client)
+	cacheService := redis_cache.NewCache(&redis.Client{})
 	serv := services.NewService(repos, cacheService)
 	handlers := handler.NewHandler(serv)
 
