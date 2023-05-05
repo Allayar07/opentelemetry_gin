@@ -40,7 +40,7 @@ func (h *Handler) CallSecondService(c *gin.Context) {
 	ctx, span := otel.Tracer("1-service").Start(c.Request.Context(), "1-service-handler")
 	defer span.End()
 
-	req, err := http.NewRequestWithContext(ctx, "GET", "http://127.0.0.1:8087/second-service/say_hello", nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", "http://127.0.0.1:8081/second-service/say_hello", nil)
 	if err != nil {
 		span.AddEvent("Errors:", trace.WithAttributes(
 			attribute.String("log.errors", fmt.Sprintf("%s", err)),

@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   zipkin:
-    image: openzipkin/zipkin
+    image: openzipkin/zipkin-slim
     container_name: zipkin
     ports:
       - '9411:9411'
@@ -10,9 +10,9 @@ services:
     image: first-service
     container_name: service-1
     ports:
-      - '8080:8081'
+      - '8081:8081'
   service-2:
     image: second-service
     container_name: service-2
     ports:
-      - '8080:8080'
+      - '8089:8089'
