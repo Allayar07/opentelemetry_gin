@@ -13,8 +13,8 @@ first you need enter first-service directory use this command:
 ```cd first-service```
 And then use docker build command: 
 ``` 
-     docker build -t first-service .
-  ```
+docker build -t first-service .
+```
 when docker image ir ready then run docker container. Use this command :
 ```
 docker run -name=service-1 -p 8080:8089 <here first services image id or name>
@@ -25,8 +25,8 @@ you need enter second-service directory use this command:
 ```cd second-service```
 And then use docker build command:
 ``` 
-     docker build -t second-service .
-  ```
+docker build -t second-service .
+ ```
 whe second services image is ready, run docker container. Use this command :
 ```
 docker run -name=service-2 -p 8081:8087 <here second services image id or name>
@@ -55,10 +55,31 @@ if docker run or docker compose isn't working ==> firstly pull zipkin docker ima
 docker run -d -p 9411:9411 openzipkin/zipkin-slim
 ```
 After this operation do this: open two terminal and cd first-service and second-service and then run:
+* **1** for first-service directory:
+ ```
+go mod tidy
+``` 
+then
+    ```
+    make build
+    ```
+    after run :
+    ```
+    make run
+    ```
+
+* **2** for second-service directory:
 ```
 go mod tidy
-```
-And then run project locally .Use this command for both services each terminal:
-```
-go run cmd/main.go
-```
+``` 
+then
+    ```
+    make build
+    ```
+    after run :
+    ```
+    make run
+    ```
+# After all
+
+* Do Request for this: http://127.0.0.1:8089/call-service
