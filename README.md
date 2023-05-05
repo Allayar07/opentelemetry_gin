@@ -17,7 +17,7 @@ docker build -t first-service .
 ```
 when docker image ir ready then run docker container. Use this command :
 ```
-docker run -name=service-1 -p 8080:8089 <here first services image id or name>
+docker run -name=service-1 -p 8089:8089 <here first services image id or name>
 ```
 
 # STEP 3:
@@ -29,7 +29,7 @@ docker build -t second-service .
  ```
 whe second services image is ready, run docker container. Use this command :
 ```
-docker run -name=service-2 -p 8081:8087 <here second services image id or name>
+docker run -name=service-2 -p 8081:8081 <here second services image id or name>
 ```
 
 # STEP 4
