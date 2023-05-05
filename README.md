@@ -4,3 +4,10 @@ first you run docker container with this command: docker run -d --name jaeger -e
 this is jeager UI :)
 # zipkin UI:
 run docker command: docker run -d -p 9411:9411 openzipkin/zipkin-slim
+
+first you need enter first-service directory from this command:
+```cd first-service```
+And then: 
+``` 
+     docker build -t first-service .
+  ```
