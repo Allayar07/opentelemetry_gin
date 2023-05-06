@@ -6,12 +6,6 @@ git clone https://github.com/Allayar07/opentelemetry_gin.git
 ```
 git clone git@github.com:Allayar07/opentelemetry_gin.git
 ```
-# **Note** if your system don't have docker engine then install it your system.
-* **for installing docker engine in your system:**
-    * Ubuntu users: click here ===> https://docs.docker.com/engine/install/ubuntu/
-    * Windows users: click here ===> https://www.simplilearn.com/tutorials/docker-tutorial/install-docker-on-windows
-    * Mac users: click here ===> https://www.makeuseof.com/how-to-install-docker-mac/
-
 # Run project step by step:
 # STEP 1:
 first check your directory. Are you in opentelemetry_gin directory? If you aren't in directory, you must enter folder opentelemetry_gin.(Use this command ``` cd opentelemetry_gin```)

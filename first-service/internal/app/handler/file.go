@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/otel"
@@ -39,7 +40,7 @@ func (h *Handler) CallSecondService(c *gin.Context) {
 	//name := c.Param("name")
 	ctx, span := otel.Tracer("1-service").Start(c.Request.Context(), "1-service-handler")
 	defer span.End()
-
+	span.RecordError(errors.New("hello world"))
 	req, err := http.NewRequestWithContext(ctx, "GET", "http://service-2:8081/second-service/say_hello", nil)
 	if err != nil {
 		span.AddEvent("Errors:", trace.WithAttributes(
