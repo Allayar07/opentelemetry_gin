@@ -1,14 +1,10 @@
-FROM golang:1.19-alpine
+FROM golang:1.19.5-alpine3.17
 
-ENV GOPATH=/
-COPY go.mod .
-COPY go.sum .
+WORKDIR /app
 
-RUN go mod download
 COPY ./ ./
 
+RUN go mod download
 RUN go build -o service_1 ./cmd/main.go
-
-EXPOSE 8089
 
 CMD ["./service_1"]

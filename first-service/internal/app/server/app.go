@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"flag"
 	"github.com/go-redis/redis/v8"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"go.opentelemetry.io/otel"
@@ -35,7 +36,9 @@ func Init(port string) {
 
 	srv := new(Server)
 	//initializing trace provider
-	tp, err := tracerProvider("http://localhost:9411/api/v2/spans")
+	url := flag.String("zipkin", "http://zipkin:9411/api/v2/spans", "zipkin url")
+	flag.Parse()
+	tp, err := tracerProvider(*url)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -48,7 +51,7 @@ func Init(port string) {
 		}
 	}()
 
-	if err = srv.Run("127.0.0.1:"+port, handlers.InitRoutes()); err != nil {
+	if err = srv.Run(":"+port, handlers.InitRoutes()); err != nil {
 		log.Fatalln(err)
 	}
 

@@ -35,7 +35,7 @@ func Init(port string) {
 
 	srv := new(Server)
 	//initializing trace provider
-	tp, err := tracerProvider("http://localhost:9411/api/v2/spans")
+	tp, err := tracerProvider("http://zipkin:9411/api/v2/spans")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -48,7 +48,7 @@ func Init(port string) {
 		}
 	}()
 
-	if err = srv.Run("127.0.0.1:"+port, handlers.InitRoutes()); err != nil {
+	if err = srv.Run(":"+port, handlers.InitRoutes()); err != nil {
 		log.Fatalln(err)
 	}
 
