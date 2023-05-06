@@ -6,7 +6,7 @@ git clone https://github.com/Allayar07/opentelemetry_gin.git
 ```
 git clone git@github.com:Allayar07/opentelemetry_gin.git
 ```
-* **Note** if your system don't have docker engine then install it your system.
+# **Note** if your system don't have docker engine then install it your system.
 * for installing docker engine in your system:
 * Ubuntu users: click here ===> https://docs.docker.com/engine/install/ubuntu/
 * Windows users: click here ===> https://www.simplilearn.com/tutorials/docker-tutorial/install-docker-on-windows
@@ -18,6 +18,7 @@ first check your directory. Are you in opentelemetry_gin directory? If you aren'
 # STEP 2:
 Use ```docker compose up``` command for running project!
 
+Wait for docker, for finishing its work
 # See result:
 Do request this url: http://localhost:8089/call-service.
 And go to zipkin UI ===> http://127.0.0.1:9411/
