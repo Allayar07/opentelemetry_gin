@@ -26,7 +26,7 @@ func Init(port string) {
 	//if err != nil {
 	//	log.Fatalln(err)
 	//}
-	traceOn := viper.GetBool("service.trace_on")
+	traceOn := viper.GetBool("service.tracing")
 	repos := repositroy2.NewRepository(&pgxpool.Pool{})
 	//client, err := pkg.NewRedisClient(7, context.Background())
 	//if err != nil {

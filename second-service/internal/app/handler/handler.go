@@ -7,14 +7,14 @@ import (
 )
 
 type Handler struct {
-	Service     *services.Service
-	TraceSwitch bool
+	Service *services.Service
+	Tracing bool
 }
 
 func NewHandler(service *services.Service, traceOn bool) *Handler {
 	return &Handler{
-		Service:     service,
-		TraceSwitch: traceOn,
+		Service: service,
+		Tracing: traceOn,
 	}
 }
 

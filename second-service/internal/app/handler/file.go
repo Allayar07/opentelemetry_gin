@@ -30,7 +30,7 @@ func (h *Handler) SetHash(c *gin.Context) {
 }
 
 func (h *Handler) SayHello(c *gin.Context) {
-	if h.TraceSwitch {
+	if h.Tracing {
 		_, span := otel.Tracer("2-service").Start(c.Request.Context(), "2-services-handler")
 		otel.GetTextMapPropagator().Extract(c.Request.Context(), propagation.HeaderCarrier(c.Request.Header))
 		defer span.End()

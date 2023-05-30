@@ -8,13 +8,13 @@ import (
 
 type Handler struct {
 	Service *services.Service
-	Tracer  bool
+	Tracing bool
 }
 
 func NewHandler(service *services.Service, traceOn bool) *Handler {
 	return &Handler{
 		Service: service,
-		Tracer:  traceOn,
+		Tracing: traceOn,
 	}
 }
 

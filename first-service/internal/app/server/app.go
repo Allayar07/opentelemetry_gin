@@ -26,7 +26,7 @@ func Init(port string) {
 	//if err != nil {
 	//	log.Fatalln(err)
 	//}
-	traceOn := viper.GetBool("service.trace_on")
+	traceOn := viper.GetBool("service.tracing")
 	if traceOn {
 		//initializing trace provider
 		url := flag.String("zipkin", "http://zipkin:9411/api/v2/spans", "zipkin url")

@@ -41,7 +41,7 @@ func (h *Handler) CallSecondService(c *gin.Context) {
 		req *http.Request
 		err error
 	)
-	if h.Tracer {
+	if h.Tracing {
 		ctx, span := otel.Tracer("1-service").Start(c.Request.Context(), "1-service-handler")
 		defer span.End()
 		span.RecordError(errors.New("hello world"))
