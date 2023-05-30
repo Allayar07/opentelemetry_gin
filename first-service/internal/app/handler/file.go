@@ -37,19 +37,32 @@ func (h *Handler) SetHash(c *gin.Context) {
 
 func (h *Handler) CallSecondService(c *gin.Context) {
 	client := http.Client{}
-	//name := c.Param("name")
-	ctx, span := otel.Tracer("1-service").Start(c.Request.Context(), "1-service-handler")
-	defer span.End()
-	span.RecordError(errors.New("hello world"))
-	req, err := http.NewRequestWithContext(ctx, "GET", "http://service-2:8081/second-service/say_hello", nil)
-	if err != nil {
+	var (
+		req *http.Request
+		err error
+	)
+	if h.Tracer {
+		ctx, span := otel.Tracer("1-service").Start(c.Request.Context(), "1-service-handler")
+		defer span.End()
+		span.RecordError(errors.New("hello world"))
+		req, err = http.NewRequestWithContext(ctx, "GET", "http://service-2:8081/second-service/say_hello", nil)
 		span.AddEvent("Errors:", trace.WithAttributes(
-			attribute.String("log.errors", fmt.Sprintf("%s", err)),
+			attribute.String("log.errors", fmt.Sprintf("%s", "oops error here appeared")),
 		))
-		c.JSON(500, err.Error())
-		return
+		if err != nil {
+			c.JSON(500, err.Error())
+			return
+		}
+		otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(req.Header))
+	} else {
+		req, err = http.NewRequestWithContext(c.Request.Context(), "GET", "http://service-2:8081/second-service/say_hello", nil)
+		if err != nil {
+
+			c.JSON(500, err.Error())
+			return
+		}
 	}
-	otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(req.Header))
+
 	resp, err := client.Do(req)
 	if err != nil {
 		c.JSON(500, err.Error())

@@ -30,9 +30,12 @@ func (h *Handler) SetHash(c *gin.Context) {
 }
 
 func (h *Handler) SayHello(c *gin.Context) {
-	_, span := otel.Tracer("2-service").Start(c.Request.Context(), "2-services-handler")
-	otel.GetTextMapPropagator().Extract(c.Request.Context(), propagation.HeaderCarrier(c.Request.Header))
-	defer span.End()
+	if h.TraceSwitch {
+		_, span := otel.Tracer("2-service").Start(c.Request.Context(), "2-services-handler")
+		otel.GetTextMapPropagator().Extract(c.Request.Context(), propagation.HeaderCarrier(c.Request.Header))
+		defer span.End()
+	}
+
 	_, err := c.Writer.Write([]byte("Hello every one!!!"))
 	if err != nil {
 		c.JSON(500, err)

@@ -5,6 +5,8 @@ import (
 	"flag"
 	"github.com/go-redis/redis/v8"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/zipkin"
 	"go.opentelemetry.io/otel/propagation"
@@ -24,6 +26,23 @@ func Init(port string) {
 	//if err != nil {
 	//	log.Fatalln(err)
 	//}
+	traceOn := viper.GetBool("service.trace_on")
+	if traceOn {
+		//initializing trace provider
+		url := flag.String("zipkin", "http://zipkin:9411/api/v2/spans", "zipkin url")
+		flag.Parse()
+		tracePrv, err := tracerProvider(*url)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer func() {
+			if err = tracePrv.Shutdown(context.Background()); err != nil {
+				log.Fatalln(err)
+			}
+		}()
+	} else {
+		logrus.Info("tracer off")
+	}
 	repos := repositroy2.NewRepository(&pgxpool.Pool{})
 	//client, err := pkg.NewRedisClient(7, context.Background())
 	//if err != nil {
@@ -32,26 +51,11 @@ func Init(port string) {
 
 	cacheService := redis_cache.NewCache(&redis.Client{})
 	serv := services.NewService(repos, cacheService)
-	handlers := handler.NewHandler(serv)
+	handlers := handler.NewHandler(serv, traceOn)
 
 	srv := new(Server)
-	//initializing trace provider
-	url := flag.String("zipkin", "http://zipkin:9411/api/v2/spans", "zipkin url")
-	flag.Parse()
-	tp, err := tracerProvider(*url)
-	if err != nil {
-		log.Fatal(err)
-	}
-	// Register our TracerProvider as the global so any imported
-	// instrumentation in the future will default to using it.
-	otel.SetTracerProvider(tp)
-	defer func() {
-		if err = tp.Shutdown(context.Background()); err != nil {
-			log.Fatalln(err)
-		}
-	}()
 
-	if err = srv.Run(":"+port, handlers.InitRoutes()); err != nil {
+	if err := srv.Run(":"+port, handlers.InitRoutes()); err != nil {
 		log.Fatalln(err)
 	}
 
@@ -70,17 +74,15 @@ func tracerProvider(url string) (*tracesdk.TracerProvider, error) {
 	if err != nil {
 		return nil, err
 	}
-	tp := trace.NewTracerProvider(
+	traceProvider := trace.NewTracerProvider(
 		trace.WithSampler(trace.AlwaysSample()),
-		// Always be sure to batch in production.
 		trace.WithBatcher(exporter),
 		// Record information about this application in a Resource.
 		trace.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
 			semconv.ServiceNameKey.String("1-service"),
-			//attribute.String("environment", environment),
-			//attribute.Int64("ID", id),
 		)),
 	)
-	return tp, nil
+	otel.SetTracerProvider(traceProvider)
+	return traceProvider, nil
 }

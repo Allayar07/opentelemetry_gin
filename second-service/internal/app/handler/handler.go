@@ -7,11 +7,15 @@ import (
 )
 
 type Handler struct {
-	Service *services.Service
+	Service     *services.Service
+	TraceSwitch bool
 }
 
-func NewHandler(service *services.Service) *Handler {
-	return &Handler{Service: service}
+func NewHandler(service *services.Service, traceOn bool) *Handler {
+	return &Handler{
+		Service:     service,
+		TraceSwitch: traceOn,
+	}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {

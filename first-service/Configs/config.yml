@@ -1,0 +1,2 @@
+service:
+  trace_on: true

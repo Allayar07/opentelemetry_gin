@@ -4,6 +4,9 @@ import (
 	"context"
 	"github.com/go-redis/redis/v8"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/zipkin"
 	"go.opentelemetry.io/otel/propagation"
@@ -23,6 +26,7 @@ func Init(port string) {
 	//if err != nil {
 	//	log.Fatalln(err)
 	//}
+	traceOn := viper.GetBool("service.trace_on")
 	repos := repositroy2.NewRepository(&pgxpool.Pool{})
 	//client, err := pkg.NewRedisClient(7, context.Background())
 	//if err != nil {
@@ -31,24 +35,26 @@ func Init(port string) {
 
 	cacheService := redis_cache.NewCache(&redis.Client{})
 	serv := services.NewService(repos, cacheService)
-	handlers := handler.NewHandler(serv)
+	handlers := handler.NewHandler(serv, traceOn)
 
 	srv := new(Server)
-	//initializing trace provider
-	tp, err := tracerProvider("http://zipkin:9411/api/v2/spans")
-	if err != nil {
-		log.Fatal(err)
-	}
-	// Register our TracerProvider as the global so any imported
-	// instrumentation in the future will default to using it.
-	otel.SetTracerProvider(tp)
-	defer func() {
-		if err = tp.Shutdown(context.Background()); err != nil {
-			log.Fatalln(err)
+	if traceOn {
+		//initializing trace provider
+		tracePrv, err := tracerProvider("http://zipkin:9411/api/v2/spans")
+		if err != nil {
+			log.Fatal(err)
 		}
-	}()
 
-	if err = srv.Run(":"+port, handlers.InitRoutes()); err != nil {
+		defer func() {
+			if err = tracePrv.Shutdown(context.Background()); err != nil {
+				log.Fatalln(err)
+			}
+		}()
+	} else {
+		logrus.Info("tracer off!!!")
+	}
+
+	if err := srv.Run(":"+port, handlers.InitRoutes()); err != nil {
 		log.Fatalln(err)
 	}
 
@@ -67,16 +73,22 @@ func tracerProvider(url string) (*tracesdk.TracerProvider, error) {
 	if err != nil {
 		return nil, err
 	}
-	tp := trace.NewTracerProvider(
-		// Always be sure to batch in production.
+	traceProvider := trace.NewTracerProvider(
 		trace.WithBatcher(exporter),
 		// Record information about this application in a Resource.
 		trace.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
 			semconv.ServiceNameKey.String("2-service"),
-			//attribute.String("environment", environment),
-			//attribute.Int64("ID", id),
 		)),
 	)
-	return tp, nil
+	otel.SetTracerProvider(traceProvider)
+	return traceProvider, nil
+}
+
+// InitConfig initializes configuration.
+func InitConfig() error {
+	viper.AddConfigPath("configs")
+	viper.SetConfigName("config")
+
+	return errors.Wrap(viper.ReadInConfig(), "can not read config")
 }
