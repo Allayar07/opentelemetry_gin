@@ -25,8 +25,7 @@ func (h *Handler) AddFile(c *gin.Context) {
 		c.JSON(500, err)
 		return
 	}
-
-	c.JSON(200, "OK")
+	c.JSON(200, "OK. added to redis!")
 }
 
 func (h *Handler) SetHash(c *gin.Context) {
