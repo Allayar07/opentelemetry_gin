@@ -7,7 +7,7 @@ import (
 )
 
 func NewPostgresDB(ctx context.Context) (*pgxpool.Pool, error) {
-	dbURL := "postgres://" + "postgres" + ":" + url.QueryEscape("password0701") + "@" + "localhost" + ":" + "5432" + "/" + "practice" + "?sslmode=" + "disable"
+	dbURL := "postgres://" + "postgres" + ":" + url.QueryEscape("password0701") + "@" + "postgres-db" + ":" + "5432" + "/" + "practice" + "?sslmode=" + "disable"
 	dbPool, err := pgxpool.Connect(ctx, dbURL)
 
 	if err != nil {

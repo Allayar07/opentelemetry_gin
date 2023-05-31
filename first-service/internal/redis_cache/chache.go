@@ -20,7 +20,7 @@ func NewCache(client *redis.Client) *Cache {
 
 func (c *Cache) SetHash(ctx context.Context) error {
 	//provide cache trace
-	ctxt, span := otel.Tracer("practice-service").Start(ctx, "Repository.SetHash")
+	ctxt, span := otel.Tracer("1-service").Start(ctx, "CacheRepository.SetHash")
 	defer span.End()
 	data := models.RedisData{
 		Name:  "hello",

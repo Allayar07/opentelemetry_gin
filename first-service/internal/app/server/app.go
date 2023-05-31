@@ -3,8 +3,6 @@ package server
 import (
 	"context"
 	"flag"
-	"github.com/go-redis/redis/v8"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel"
@@ -19,13 +17,14 @@ import (
 	"practice_optelem/first-service/internal/redis_cache"
 	repositroy2 "practice_optelem/first-service/internal/repositroy"
 	"practice_optelem/first-service/internal/services"
+	"practice_optelem/first-service/pkg"
 )
 
 func Init(port string) {
-	//db, err := repositroy2.NewPostgresDB(context.Background())
-	//if err != nil {
-	//	log.Fatalln(err)
-	//}
+	db, err := repositroy2.NewPostgresDB(context.Background())
+	if err != nil {
+		log.Fatalln(err)
+	}
 	traceOn := viper.GetBool("service.tracing")
 	if traceOn {
 		//initializing trace provider
@@ -43,19 +42,19 @@ func Init(port string) {
 	} else {
 		logrus.Info("tracer off")
 	}
-	repos := repositroy2.NewRepository(&pgxpool.Pool{})
-	//client, err := pkg.NewRedisClient(7, context.Background())
-	//if err != nil {
-	//	log.Fatalln(err)
-	//}
+	repos := repositroy2.NewRepository(db)
+	client, err := pkg.NewRedisClient(7, context.Background())
+	if err != nil {
+		log.Fatalln(err)
+	}
 
-	cacheService := redis_cache.NewCache(&redis.Client{})
+	cacheService := redis_cache.NewCache(client)
 	serv := services.NewService(repos, cacheService)
 	handlers := handler.NewHandler(serv, traceOn)
 
 	srv := new(Server)
 
-	if err := srv.Run(":"+port, handlers.InitRoutes()); err != nil {
+	if err = srv.Run(":"+port, handlers.InitRoutes()); err != nil {
 		log.Fatalln(err)
 	}
 

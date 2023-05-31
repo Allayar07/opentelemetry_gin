@@ -2,8 +2,6 @@ package server
 
 import (
 	"context"
-	"github.com/go-redis/redis/v8"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -19,21 +17,22 @@ import (
 	"practice_optelem/second-service/internal/redis_cache"
 	repositroy2 "practice_optelem/second-service/internal/repositroy"
 	"practice_optelem/second-service/internal/services"
+	"practice_optelem/second-service/pkg"
 )
 
 func Init(port string) {
-	//db, err := repositroy2.NewPostgresDB(context.Background())
-	//if err != nil {
-	//	log.Fatalln(err)
-	//}
+	db, err := repositroy2.NewPostgresDB(context.Background())
+	if err != nil {
+		log.Fatalln(err)
+	}
 	traceOn := viper.GetBool("service.tracing")
-	repos := repositroy2.NewRepository(&pgxpool.Pool{})
-	//client, err := pkg.NewRedisClient(7, context.Background())
-	//if err != nil {
-	//	log.Fatalln(err)
-	//}
+	repos := repositroy2.NewRepository(db)
+	client, err := pkg.NewRedisClient(7, context.Background())
+	if err != nil {
+		log.Fatalln(err)
+	}
 
-	cacheService := redis_cache.NewCache(&redis.Client{})
+	cacheService := redis_cache.NewCache(client)
 	serv := services.NewService(repos, cacheService)
 	handlers := handler.NewHandler(serv, traceOn)
 

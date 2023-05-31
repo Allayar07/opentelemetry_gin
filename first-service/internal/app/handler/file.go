@@ -25,7 +25,7 @@ func (h *Handler) AddFile(c *gin.Context) {
 }
 
 func (h *Handler) SetHash(c *gin.Context) {
-	ctx, span := otel.Tracer("first-service").Start(c.Request.Context(), "Delivery.SetHash")
+	ctx, span := otel.Tracer("1-service").Start(c.Request.Context(), "Delivery.SetHash")
 	defer span.End()
 	err := h.Service.File.SetHash(ctx)
 	if err != nil {
@@ -55,7 +55,7 @@ func (h *Handler) CallSecondService(c *gin.Context) {
 		}
 		otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(req.Header))
 	} else {
-		req, err = http.NewRequestWithContext(c.Request.Context(), "GET", "http://service-2:8081/second-service/say_hello", nil)
+		req, err = http.NewRequestWithContext(c.Request.Context(), "GET", "http://localhost:8081/second-service/say_hello", nil)
 		if err != nil {
 
 			c.JSON(500, err.Error())
