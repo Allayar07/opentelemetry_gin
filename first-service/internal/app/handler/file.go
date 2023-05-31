@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -13,9 +14,18 @@ import (
 )
 
 func (h *Handler) AddFile(c *gin.Context) {
+	var (
+		ctx  context.Context
+		span trace.Span
+	)
 	name := c.Query("name")
-	ctx, span := otel.Tracer("first-service").Start(c.Request.Context(), "Delivery.AddFile")
-	defer span.End()
+	if h.Tracing {
+		ctx, span = otel.Tracer("first-service").Start(c.Request.Context(), "Delivery.AddFile")
+		defer span.End()
+	} else {
+		ctx = context.Background()
+	}
+
 	if err := h.Service.File.Add(ctx, name, 170); err != nil {
 		c.JSON(500, err)
 		return
@@ -25,8 +35,17 @@ func (h *Handler) AddFile(c *gin.Context) {
 }
 
 func (h *Handler) SetHash(c *gin.Context) {
-	ctx, span := otel.Tracer("1-service").Start(c.Request.Context(), "Delivery.SetHash")
-	defer span.End()
+	var (
+		ctx  context.Context
+		span trace.Span
+	)
+	if h.Tracing {
+		ctx, span = otel.Tracer("1-service").Start(c.Request.Context(), "Delivery.SetHash")
+		defer span.End()
+	} else {
+		ctx = context.Background()
+	}
+
 	err := h.Service.File.SetHash(ctx)
 	if err != nil {
 		c.JSON(500, err)
