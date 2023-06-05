@@ -31,3 +31,16 @@ services:
     container_name: zipkin
     ports:
       - "9411:9411"
+
+  grafana:
+    image: grafana/grafana:9.3.0
+    container_name: grafana_zipkin
+    ports:
+      - '3000:3000'
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+#    volumes:
+#      - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+#      - ./grafana:/var/lib/grafana/data
