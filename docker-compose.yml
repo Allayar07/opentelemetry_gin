@@ -44,4 +44,3 @@ services:
     volumes:
       - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
 #      - ./grafana:/var/lib/grafana/data
-# TODO write documentation
